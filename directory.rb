@@ -30,23 +30,24 @@ def try_load_students
   return if filename.nil? # exit the method if filename has not been given in command line
   if File.exists?(filename)
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
   else
     puts "Sorry, #{filename} doesn't exist"
     exit # quit the program
   end
 end
 
-def load_students(filename = "students.csv")
-  puts "Please enter the file you want to load from"
-  filename = STDIN.gets.chomp
+def load_students(filename = nil)
+  if filename.nil?
+    puts "Please enter the file you want to load from"
+    filename = STDIN.gets.chomp
+  end
   if File.exists?(filename)
-    file = File.open(filename, "r")
-    file.readlines.each do |line|
-      name, cohort = line.chomp.split(",")
-      @students << {name: name, cohort: cohort.to_sym}
+    File.open(filename, "r") do |file|
+      file.readlines.each do |line|
+        name, cohort = line.chomp.split(",")
+        @students << {name: name, cohort: cohort.to_sym}
+      end 
     end
-    file.close
     puts "#{@students.count} students were loaded"
   else
     puts "Sorry, #{filename} doesn't exist"
@@ -58,13 +59,13 @@ def save_students
   filename = STDIN.gets.chomp
   if File.exists?(filename)
     # open the file for writing
-    file = File.open(filename, "w")
-    # iterate over the array of students
-    @students.each do |student|
-      # put student info in an array then join with commas
-      csv_line = [student[:name], student[:cohort]].join(",")
-      file.puts csv_line
-      file.close
+    File.open(filename, "w") do |file|
+      # iterate over the array of students
+      @students.each do |student|
+        # put student info in an array then join with commas
+        csv_line = [student[:name], student[:cohort]].join(",")
+        file.puts csv_line
+      end
       puts "#{@students.count} students were saved"
     end
   else
