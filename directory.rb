@@ -1,6 +1,9 @@
+require 'csv'
+
 @students = [] # creates an empty array accessible to all methods
 
-# Step 9: Interactive menu
+
+
 def interactive_menu
   loop do
     print_menu
@@ -42,12 +45,10 @@ def load_students(filename = nil)
     filename = STDIN.gets.chomp
   end
   if File.exists?(filename)
-    File.open(filename, "r") do |file|
-      file.readlines.each do |line|
-        name, cohort = line.chomp.split(",")
-        @students << {name: name, cohort: cohort.to_sym}
-      end 
-    end
+    student_array = CSV.read("students.csv")
+    fields = [:name, :cohort]
+    @students = student_array.map {|sub_array| fields.zip(sub_array).to_h }
+    print @students
     puts "#{@students.count} students were loaded"
   else
     puts "Sorry, #{filename} doesn't exist"
@@ -73,7 +74,6 @@ def save_students
   end
 end
 
-# step 10
 def print_menu
   puts "Please select the option you want from below by entering the number"
   puts "1. Input the students"
@@ -83,7 +83,6 @@ def print_menu
   puts "9. Exit"
 end
 
-# step 10
 def show_students
   print_header
   print_student
@@ -117,7 +116,6 @@ def print_student
   }
 end
 
-# ex 9
 def print_footer
   print "Overall, we have #{@students.count} great student", @students.count > 1 ? "s\n" : "\n"
 end
