@@ -1,20 +1,81 @@
+@students = [] # creates an empty array accessible to all methods
+
+# Step 9: Interactive menu
+def interactive_menu
+  loop do
+    print_menu
+    process_menu_choice(gets.chomp)
+  end
+end
+
+def process_menu_choice(menu_choice)
+  case menu_choice
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "3"
+    save_students
+  when "4"
+    load_students
+  when "9"
+    exit
+  else
+    puts "not a valid option, please try again"
+  end
+end
+
+def load_students
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+  name, cohort = line.chomp.split(",")
+    @students << {name: name, cohort: cohort.to_sym}
+  end
+  file.close
+end
+
+def save_students
+  # open the file for writing
+  file = File.open("students.csv", "w")
+  # iterate over the array of students
+  @students.each do |student|
+    # put student info in an array then join with commas
+    csv_line = [student[:name], student[:cohort]].join(",")
+    file.puts csv_line
+  end
+  file.close
+end
+
+# step 10
+def print_menu
+  puts "Please select the option you want from below by entering the number"
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
+  puts "9. Exit"
+end
+
+# step 10
+def show_students
+  print_header
+  print_student
+  print_footer
+end
+
 def input_students
   puts "Please enter the names of the students"
   puts "To finish, just hit return twice"
-  # create an empty array
-  students = []
   # get name
   name = gets.chomp
   # while the name is not empty, add a hash to the array
   while !name.empty? do
     # add the student hash to the array
-    students << {name: name, cohort: :november}
-    puts "Now we have #{students.count} students"
+    @students << {name: name, cohort: :november}
+    puts "Now we have #{@students.count} students"
     # get another name from the user
     name = gets.chomp
   end
-  # return the array of students
-  students
 end
 
 def print_header
@@ -22,17 +83,16 @@ def print_header
   puts "-------------"
 end
 
-def print_student(students)
-  students.each { |student| 
-    puts "#{student[:name]} (#{student[:cohort]} cohort)"
+def print_student
+  # ex. 1: print student number before name
+  @students.each.with_index(1) { |student, index| 
+    puts "#{index}. #{student[:name]} (#{student[:cohort]} cohort)"
   }
 end
 
-def print_footer(names)
-  puts "Overall, we have #{names.count} great students"
+# ex 9
+def print_footer
+  print "Overall, we have #{@students.count} great student", @students.count > 1 ? "s\n" : "\n"
 end
 
-students = input_students
-print_header
-print_student(students)
-print_footer(students)
+interactive_menu
